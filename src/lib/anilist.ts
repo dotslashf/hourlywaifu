@@ -22,7 +22,7 @@ export default class CharacterFinder {
 
   public getRandomCharacter(): Promise<CharacterStructure> {
     const nPage = Math.floor(Math.random() * 30 + 1);
-    const index = Math.floor(Math.random() * 50);
+    const index = Math.floor(Math.random() * 200);
 
     return new Promise((resolve, reject) => {
       request

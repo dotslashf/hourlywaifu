@@ -55,7 +55,12 @@ export default class Waifu {
     }
   }
 
-  public async downloadCharImg() {
+  public async downloadAllImage() {
+    await this.downloadCharImg();
+    await this.downloadCharMedia();
+  }
+
+  private async downloadCharImg() {
     await downloadImage(this.img.anilist, this.name, 'characters', 'anilist');
     for (let i = 0; i < this.img.others.length; i++) {
       const img = this.img.others[i];
@@ -63,7 +68,7 @@ export default class Waifu {
     }
   }
 
-  public async downloadCharMedia() {
+  private async downloadCharMedia() {
     return Promise.all(
       this.media.map(async (media, i) => {
         await downloadImage(
