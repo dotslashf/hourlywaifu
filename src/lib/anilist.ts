@@ -1,8 +1,10 @@
 import {
+  Anime,
+  AnimeInterface,
   CharactersInterface,
   CharacterStructure,
 } from './../common/anilist.interface';
-import { GET_RANDOM_CHARACTER } from '../graphql/query';
+import { GET_CHARACTER_ANIME, GET_RANDOM_CHARACTER } from '../graphql/query';
 import request from 'node-superfetch';
 import dotenv from 'dotenv';
 
@@ -42,6 +44,31 @@ export default class CharacterFinder {
             char = await this.getRandomCharacter();
             resolve(char);
           }
+        })
+        .catch(e => {
+          console.log(e);
+          reject(e);
+        });
+    });
+  }
+
+  public getCharacterAnime(animeId: number): Promise<Anime[]> {
+    return new Promise((resolve, reject) => {
+      request
+        .post(this.anilistEndpoint)
+        .send(
+          Object.assign({
+            variables: { id: animeId },
+            query: GET_CHARACTER_ANIME,
+          })
+        )
+        .then(data => {
+          const _data = data.body as AnimeInterface;
+          const animes = _data.data.Character.media.nodes;
+          animes.sort((a, b) => {
+            return b.favourites - a.favourites;
+          });
+          resolve(animes);
         })
         .catch(e => {
           console.log(e);

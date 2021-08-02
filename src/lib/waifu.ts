@@ -1,9 +1,15 @@
+import { CharacterStructure } from './../common/anilist.interface';
 export default class Waifu {
+  public id: number;
   public name: string;
-  public img: string;
+  public img: {
+    anilist: string;
+    others?: string[];
+  };
 
-  constructor(name: string, img: string) {
-    this.name = name;
-    this.img = img;
+  constructor(char: CharacterStructure) {
+    this.id = char.id;
+    this.name = char.name.full;
+    this.img = { anilist: char.image.large };
   }
 }

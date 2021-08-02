@@ -15,9 +15,19 @@ export interface CharactersInterface {
   };
 }
 
+export interface AnimeInterface {
+  data: {
+    Character: {
+      media: {
+        nodes: [Anime];
+      };
+    };
+  };
+}
+
 interface baseStructure {
   id: number;
-  siteUrl: string;
+  siteUrl?: string;
   favourites: number;
 }
 
@@ -35,4 +45,13 @@ export interface CharacterStructure extends baseStructure {
     medium: string;
   };
   gender: 'Male' | 'Female' | null;
+}
+
+export interface Anime extends baseStructure {
+  title: {
+    userPreferred: string;
+  };
+  coverImage: {
+    extraLarge: string;
+  };
 }

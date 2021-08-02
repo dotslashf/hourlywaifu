@@ -28,3 +28,21 @@ query($page: Int) {
     }
   }
 }`;
+
+export const GET_CHARACTER_ANIME = `
+query ($id: Int) {
+  Character(id: $id) {
+    media {
+      nodes {
+        id
+        favourites
+        title {
+          userPreferred
+        }
+        coverImage {
+          extraLarge
+        }
+      }
+    }
+  }
+}`;
