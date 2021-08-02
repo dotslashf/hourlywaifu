@@ -1,5 +1,5 @@
 import {
-  Anime,
+  Media,
   AnimeInterface,
   CharactersInterface,
   CharacterStructure,
@@ -7,14 +7,17 @@ import {
 import { GET_CHARACTER_ANIME, GET_RANDOM_CHARACTER } from '../graphql/query';
 import request from 'node-superfetch';
 import dotenv from 'dotenv';
+import createLogger from 'logging';
 
 dotenv.config();
 
 export default class CharacterFinder {
   private anilistEndpoint: string;
+  private logger: createLogger.Logger;
 
   public constructor() {
     this.anilistEndpoint = process.env.ANILIST_GRAPHQL_ENDPOINT!;
+    this.logger = createLogger('Anilist');
   }
 
   public getRandomCharacter(): Promise<CharacterStructure> {
@@ -37,10 +40,10 @@ export default class CharacterFinder {
           let char = chars.data.Page.characters[index];
 
           if (char.gender === 'Female') {
+            this.logger.info(`${char.name.userPreferred} selected as waifu`);
             resolve(char);
           } else {
-            console.log('not a female');
-
+            this.logger.info(`${char.name.userPreferred} is not a waifu`);
             char = await this.getRandomCharacter();
             resolve(char);
           }
@@ -52,13 +55,13 @@ export default class CharacterFinder {
     });
   }
 
-  public getCharacterAnime(animeId: number): Promise<Anime[]> {
+  public getCharacterMedia(characterId: number): Promise<Media[]> {
     return new Promise((resolve, reject) => {
       request
         .post(this.anilistEndpoint)
         .send(
           Object.assign({
-            variables: { id: animeId },
+            variables: { id: characterId },
             query: GET_CHARACTER_ANIME,
           })
         )

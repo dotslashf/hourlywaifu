@@ -19,7 +19,7 @@ export interface AnimeInterface {
   data: {
     Character: {
       media: {
-        nodes: [Anime];
+        nodes: [Media];
       };
     };
   };
@@ -47,7 +47,8 @@ export interface CharacterStructure extends baseStructure {
   gender: 'Male' | 'Female' | null;
 }
 
-export interface Anime extends baseStructure {
+export interface Media extends baseStructure {
+  idMal: number;
   title: {
     userPreferred: string;
   };

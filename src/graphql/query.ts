@@ -35,6 +35,7 @@ query ($id: Int) {
     media {
       nodes {
         id
+        idMal
         favourites
         title {
           userPreferred

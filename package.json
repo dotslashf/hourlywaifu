@@ -12,6 +12,7 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "jikants": "^1.2.13",
+    "logging": "^3.3.0",
     "node-superfetch": "^0.2.3"
   },
   "scripts": {
