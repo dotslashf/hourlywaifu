@@ -42,6 +42,7 @@ query ($id: Int) {
         coverImage {
           extraLarge
         }
+        type
       }
     }
   }

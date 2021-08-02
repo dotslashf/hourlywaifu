@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "jikan-client": "^1.0.0",
+    "jikants": "^1.2.13",
     "node-superfetch": "^0.2.3"
-  },"scripts": {
+  },
+  "scripts": {
     "ts-dev": "ts-node src/index.ts",
     "build": "tsc --build",
     "watch": "tsc -w",

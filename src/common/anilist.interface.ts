@@ -54,4 +54,5 @@ export interface Anime extends baseStructure {
   coverImage: {
     extraLarge: string;
   };
+  type: 'ANIME' | 'MANGA';
 }

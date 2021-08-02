@@ -68,7 +68,13 @@ export default class CharacterFinder {
           animes.sort((a, b) => {
             return b.favourites - a.favourites;
           });
-          resolve(animes);
+
+          const topAnime =
+            animes.length > 4
+              ? animes.slice(0, 4)
+              : animes.slice(0, animes.length);
+
+          resolve(topAnime);
         })
         .catch(e => {
           console.log(e);
