@@ -121,11 +121,43 @@ export default class Twitter {
       mediaIds.push(media.media_id_string);
     }
 
-    await this.client.post('statuses/update', {
-      status,
-      in_reply_to_status_id: tweetIdStr,
-      media_ids: mediaIds,
-      auto_populate_reply_metadata: true,
-    });
+    try {
+      await this.client.post('statuses/update', {
+        status,
+        in_reply_to_status_id: tweetIdStr,
+        media_ids: mediaIds,
+        auto_populate_reply_metadata: true,
+      });
+    } catch (error) {
+      this.logger.warn('tweetTopMedia', error);
+      const tweetPartOne = status.slice(0, Math.round(status.length / 2));
+      const tweetPartTwo = status.slice(
+        Math.round(status.length / 2),
+        status.length
+      );
+
+      this.client.post(
+        'statuses/update',
+        {
+          status: tweetPartOne,
+          in_reply_to_status_id: tweetIdStr,
+          media_ids: mediaIds,
+          auto_populate_reply_metadata: true,
+        },
+        (err, data) => {
+          if (err) {
+            this.logger.error('tweetTopMedia', error);
+          } else {
+            const tweet = data as TwitterTweetResponse;
+
+            this.client.post('statuses/update', {
+              status: tweetPartTwo,
+              in_reply_to_status_id: tweet.id_str,
+              auto_populate_reply_metadata: true,
+            });
+          }
+        }
+      );
+    }
   }
 }
