@@ -2,7 +2,10 @@ import Waifu from './waifu';
 
 export default class Formatter {
   private waifu: Waifu;
-  public topMedia: string;
+  public topMedia: {
+    listTopmedia: string[];
+    topMediaLength: number;
+  };
   public waifuSource: string;
 
   constructor(waifu: Waifu) {
@@ -13,14 +16,20 @@ export default class Formatter {
 
   private flattenMedia() {
     const topMedia = this.waifu.media.reduce((acc, media, index) => {
-      return `${acc}${index + 1}. ${
-        media.type === 'ANIME' ? '[Anime]' : '[Manga]'
-      } ${media.title.userPreferred}\nTotal Favourites: ${
-        media.favourites
-      }\n\n`;
+      const fav =
+        media.favourites > 10
+          ? `Total Favourites: ${media.favourites}\n\n`
+          : null;
+
+      return `${acc}${index + 1}. [${media.type}] ${
+        media.title.userPreferred
+      }\n${fav}`;
     }, '');
 
-    return `Top Media:\n${topMedia}`;
+    return {
+      listTopmedia: topMedia.split(/\n\n/g),
+      topMediaLength: topMedia.length,
+    };
   }
 
   private waifuFrom() {

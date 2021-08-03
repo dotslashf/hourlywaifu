@@ -47,7 +47,6 @@ export default class Twitter {
             this.logger.error('uploadImage', err);
             reject(err);
           } else {
-            this.logger.info(`uploadImage success ${type}/${filePath}`);
             resolve(data as TwitterMediaResponse);
           }
         }
@@ -80,6 +79,7 @@ export default class Twitter {
             this.logger.error('tweetImgFromMal', err);
             reject(err);
           } else {
+            this.logger.info('tweetImgFromMal ✔️');
             resolve(data as TwitterTweetResponse);
           }
         }
@@ -113,51 +113,61 @@ export default class Twitter {
   public async tweetTopMedia(
     status: string,
     tweetIdStr: string,
-    media: Media[]
-  ) {
+    media?: Media[]
+  ): Promise<TwitterTweetResponse> {
     const mediaIds: string[] = [];
-    for (let i = 0; i < media.length; i++) {
-      const media = await this.uploadImage(`cover_${i}`, 'media');
-      mediaIds.push(media.media_id_string);
+    if (media) {
+      for (let i = 0; i < media.length; i++) {
+        const media = await this.uploadImage(`cover_${i}`, 'media');
+        mediaIds.push(media.media_id_string);
+      }
     }
 
-    try {
-      await this.client.post('statuses/update', {
-        status,
-        in_reply_to_status_id: tweetIdStr,
-        media_ids: mediaIds,
-        auto_populate_reply_metadata: true,
-      });
-    } catch (error) {
-      this.logger.warn('tweetTopMedia', error);
-      const tweetPartOne = status.slice(0, Math.round(status.length / 2));
-      const tweetPartTwo = status.slice(
-        Math.round(status.length / 2),
-        status.length
-      );
-
+    return new Promise((resolve, reject) => {
       this.client.post(
         'statuses/update',
         {
-          status: tweetPartOne,
+          status: `Top Media:\n\n${status}`,
           in_reply_to_status_id: tweetIdStr,
           media_ids: mediaIds,
           auto_populate_reply_metadata: true,
         },
         (err, data) => {
           if (err) {
-            this.logger.error('tweetTopMedia', error);
+            this.logger.error('tweetTopMedia', err);
+            reject(err);
           } else {
-            const tweet = data as TwitterTweetResponse;
-
-            this.client.post('statuses/update', {
-              status: tweetPartTwo,
-              in_reply_to_status_id: tweet.id_str,
-              auto_populate_reply_metadata: true,
-            });
+            this.logger.info('tweetTopMedia ✔️');
+            resolve(data as TwitterTweetResponse);
           }
         }
       );
-    }
+    });
+  }
+
+  public async tweetThread(
+    status: string,
+    params: { mediaId?: string[]; tweetIdStr: string }
+  ): Promise<TwitterTweetResponse> {
+    return new Promise((resolve, reject) => {
+      this.client.post(
+        'statuses/update',
+        {
+          status: status,
+          in_reply_to_status_id: params.tweetIdStr,
+          media_ids: params.mediaId,
+          auto_populate_reply_metadata: true,
+        },
+        (err, data) => {
+          if (err) {
+            this.logger.error('tweetThread', err);
+            reject(err);
+          } else {
+            this.logger.info('tweetThread', status);
+            resolve(data as TwitterTweetResponse);
+          }
+        }
+      );
+    });
   }
 }

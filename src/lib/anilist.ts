@@ -21,8 +21,8 @@ export default class CharacterFinder {
   }
 
   public getRandomCharacter(): Promise<CharacterStructure> {
-    const nPage = Math.floor(Math.random() * 30 + 1);
-    const index = Math.floor(Math.random() * 200);
+    const nPage = Math.floor(Math.random() * 200 + 1);
+    const index = Math.floor(Math.random() * 50);
 
     return new Promise((resolve, reject) => {
       request
@@ -40,10 +40,14 @@ export default class CharacterFinder {
           let char = chars.data.Page.characters[index];
 
           if (char.gender === 'Female') {
-            this.logger.info(`${char.name.userPreferred} selected as waifu`);
+            this.logger.info(
+              `${char.name.userPreferred}, ${char.id} selected as waifu`
+            );
             resolve(char);
           } else {
-            this.logger.info(`${char.name.userPreferred} is not a waifu`);
+            this.logger.info(
+              `${char.name.userPreferred}, ${char.id} is not a waifu`
+            );
             char = await this.getRandomCharacter();
             resolve(char);
           }

@@ -7,7 +7,6 @@ const logger = createLogger('downloadImage');
 
 export default function downloadImage(
   url: string,
-  charName: string,
   type: 'media' | 'characters',
   fileName: string
 ): Promise<void> {
@@ -19,7 +18,6 @@ export default function downloadImage(
       const buffer = res.raw;
 
       await fs.writeFile(`${imgFullPath}/${type}/${fileName}.jpg`, buffer!);
-      logger.info(`success ${charName} ${fileName}`);
       resolve();
     } catch (e) {
       logger.error(`failed download ${fileName}.jpg`);

@@ -23,21 +23,26 @@ export default class Waifu {
     this._logger = createLogger('Waifu');
   }
 
-  public async getIdMal() {
+  public async getIdMal(): Promise<number | undefined> {
     const topMedia = this.media[0];
-    const res = await request.get(
-      `https://api.jikan.moe/v3/anime/${topMedia.idMal}/characters_staff`
-    );
-    const data = res.body as MalCharacter;
-    const exact = data.characters.filter(char => {
-      const name = char.name
-        .split(', ')
-        .reverse()
-        .join(' ');
+    try {
+      const res = await request.get(
+        `https://api.jikan.moe/v3/anime/${topMedia.idMal}/characters_staff`
+      );
+      const data = res.body as MalCharacter;
+      const exact = data.characters.filter(char => {
+        const name = char.name
+          .split(', ')
+          .reverse()
+          .join(' ');
 
-      return name === this.name;
-    });
-    return exact[0].mal_id;
+        return name === this.name;
+      });
+      return exact[0].mal_id;
+    } catch (err) {
+      this._logger.warn('getIdMal no idMal');
+      return undefined;
+    }
   }
 
   public async getImgFromMal(idMal: number): Promise<void> {
@@ -60,24 +65,25 @@ export default class Waifu {
     await this.downloadCharMedia();
   }
 
-  private async downloadCharImg() {
-    await downloadImage(this.img.anilist, this.name, 'characters', 'anilist');
-    for (let i = 0; i < this.img.others.length; i++) {
-      const img = this.img.others[i];
-      await downloadImage(img, this.name, 'characters', `${i}`);
-    }
+  public async downloadCharImg(): Promise<void> {
+    return new Promise(async resolve => {
+      await downloadImage(this.img.anilist, 'characters', 'anilist');
+      for (let i = 0; i < this.img.others.length; i++) {
+        const img = this.img.others[i];
+        await downloadImage(img, 'characters', `${i}`);
+      }
+      this._logger.info(`downloadCharImg ✔️`);
+      resolve();
+    });
   }
 
-  private async downloadCharMedia() {
-    return Promise.all(
+  public async downloadCharMedia(): Promise<void> {
+    return new Promise(resolve => {
       this.media.map(async (media, i) => {
-        await downloadImage(
-          media.coverImage.extraLarge,
-          media.title.userPreferred,
-          'media',
-          `cover_${i}`
-        );
-      })
-    );
+        await downloadImage(media.coverImage.extraLarge, 'media', `cover_${i}`);
+      });
+      this._logger.info(`downloadCharMedia ✔️`);
+      resolve();
+    });
   }
 }
